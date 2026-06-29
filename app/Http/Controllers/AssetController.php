@@ -7,8 +7,10 @@ use App\Http\Requests\StoreAssetRequest;
 use App\Http\Requests\UpdateAssetRequest;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\Brand;
 use App\Models\Location;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +28,7 @@ class AssetController extends Controller
     {
         $this->authorize('asset.viewAny');
 
-        $assets = Asset::with(['category', 'location', 'assignedUser'])
+        $assets = Asset::with(['category', 'location', 'assignedUser', 'vendor'])
             ->search($request->input('search'))
             ->ofStatus($request->input('status'))
             ->ofCategory($request->integer('category_id') ?: null)
@@ -49,11 +51,13 @@ class AssetController extends Controller
         $this->authorize('asset.create');
 
         $categories = AssetCategory::orderBy('name')->get();
+        $brands     = Brand::orderBy('name')->get();
+        $vendors    = Vendor::orderBy('name')->get();
         $locations  = Location::orderBy('name')->get();
         $users      = User::orderBy('name')->get();
         $statuses   = AssetStatus::cases();
 
-        return view('assets.create', compact('categories', 'locations', 'users', 'statuses'));
+        return view('assets.create', compact('categories', 'brands', 'vendors', 'locations', 'users', 'statuses'));
     }
 
     // =========================================================
@@ -103,7 +107,7 @@ class AssetController extends Controller
     {
         $this->authorize('asset.viewAny');
 
-        $asset->load(['category', 'location', 'assignedUser']);
+        $asset->load(['category', 'location', 'assignedUser', 'vendor']);
 
         return view('assets.show', compact('asset'));
     }
@@ -119,11 +123,13 @@ class AssetController extends Controller
         }
 
         $categories = AssetCategory::orderBy('name')->get();
+        $brands     = Brand::orderBy('name')->get();
+        $vendors    = Vendor::orderBy('name')->get();
         $locations  = Location::orderBy('name')->get();
         $users      = User::orderBy('name')->get();
         $statuses   = AssetStatus::cases();
 
-        return view('assets.edit', compact('asset', 'categories', 'locations', 'users', 'statuses'));
+        return view('assets.edit', compact('asset', 'categories', 'brands', 'vendors', 'locations', 'users', 'statuses'));
     }
 
     // =========================================================

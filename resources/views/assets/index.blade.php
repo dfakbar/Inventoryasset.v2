@@ -45,7 +45,7 @@
                     <label for="status" class="form-label small text-white-50 mb-1">
                         <i class="bi bi-tag me-1"></i>Status
                     </label>
-                    <select id="status" name="status" class="form-select form-select-sm">
+                    <select id="status" name="status" class="form-select form-select-sm" data-searchable>
                         <option value="">— Semua Status —</option>
                         @foreach ($statuses as $status)
                             <option value="{{ $status->value }}"
@@ -61,7 +61,7 @@
                     <label for="category_id" class="form-label small text-white-50 mb-1">
                         <i class="bi bi-grid me-1"></i>Kategori
                     </label>
-                    <select id="category_id" name="category_id" class="form-select form-select-sm">
+                    <select id="category_id" name="category_id" class="form-select form-select-sm" data-searchable>
                         <option value="">— Semua Kategori —</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}"
@@ -115,6 +115,7 @@
                         <th style="min-width:120px">Kategori</th>
                         <th style="min-width:150px">Lokasi</th>
                         <th style="min-width:140px">Merek / Model</th>
+                        <th style="min-width:120px">Vendor</th>
                         <th class="text-center" style="min-width:140px">Status</th>
                         <th class="text-center" style="width:120px">Aksi</th>
                     </tr>
@@ -166,6 +167,11 @@
                                 @else
                                     <span class="text-muted">—</span>
                                 @endif
+                            </td>
+
+                            {{-- Vendor --}}
+                            <td class="small text-muted">
+                                {{ $asset->vendor?->name ?? '—' }}
                             </td>
 
                             {{-- Status --}}

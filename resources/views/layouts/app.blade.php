@@ -119,6 +119,93 @@
             right: 1rem; z-index: 1055; width: 340px;
         }
 
+        /* ── Searchable Select ── */
+        .searchable-wrapper {
+            position: relative;
+        }
+        .searchable-wrapper .searchable-input {
+            cursor: pointer;
+            background: #fff;
+            padding-right: 2rem;
+        }
+        .searchable-wrapper .searchable-arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6c757d;
+            font-size: .75rem;
+        }
+        .searchable-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: .375rem;
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+            max-height: 280px;
+            display: none;
+            margin-top: 2px;
+        }
+        .searchable-dropdown.show {
+            display: block;
+        }
+        .searchable-dropdown .search-box {
+            padding: .5rem;
+            border-bottom: 1px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            border-radius: .375rem .375rem 0 0;
+        }
+        .searchable-dropdown .search-box input {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            font-size: .875rem;
+            outline: none;
+        }
+        .searchable-dropdown .search-box input:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+        }
+        .searchable-dropdown .options-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .searchable-dropdown .options-list li {
+            padding: .5rem .75rem;
+            cursor: pointer;
+            font-size: .875rem;
+            border-bottom: 1px solid #f1f3f5;
+            transition: background .1s;
+        }
+        .searchable-dropdown .options-list li:hover,
+        .searchable-dropdown .options-list li.highlighted {
+            background: #e9ecef;
+        }
+        .searchable-dropdown .options-list li.selected {
+            background: #0d6efd;
+            color: #fff;
+        }
+        .searchable-dropdown .options-list li.no-result {
+            color: #6c757d;
+            cursor: default;
+            text-align: center;
+            padding: 1rem;
+        }
+        .searchable-dropdown .options-list li.no-result:hover {
+            background: transparent;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 991.98px) {
             #sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
@@ -155,7 +242,7 @@
         </a>
 
         {{-- Menu tambahan berdasarkan permission --}}
-        @canany(['asset.create', 'location.viewAny'])
+        @canany(['asset.create', 'category.viewAny', 'brand.viewAny', 'vendor.viewAny', 'location.viewAny'])
         <div class="nav-label mt-2">Akses Saya</div>
         @endcanany
 
@@ -163,6 +250,27 @@
         <a href="{{ route('assets.create') }}"
            class="nav-link {{ request()->routeIs('assets.create') ? 'active' : '' }}">
             <i class="bi bi-plus-square-fill"></i> Tambah Aset
+        </a>
+        @endcan
+
+        @can('category.viewAny')
+        <a href="{{ route('admin.categories.index') }}"
+           class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <i class="bi bi-tags-fill"></i> Manajemen Kategori
+        </a>
+        @endcan
+
+        @can('brand.viewAny')
+        <a href="{{ route('admin.brands.index') }}"
+           class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
+            <i class="bi bi-bookmark-star-fill"></i> Manajemen Merek
+        </a>
+        @endcan
+
+        @can('vendor.viewAny')
+        <a href="{{ route('admin.vendors.index') }}"
+           class="nav-link {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
+            <i class="bi bi-truck"></i> Manajemen Vendor
         </a>
         @endcan
 
@@ -308,6 +416,181 @@
         // Auto-dismiss flash messages setelah 4 detik
         document.querySelectorAll('.flash-container .alert').forEach(el => {
             setTimeout(() => bootstrap.Alert.getOrCreateInstance(el)?.close(), 4000);
+        });
+
+        // ── Searchable Select ──
+        class SearchableSelect {
+            constructor(select) {
+                this.select = select;
+                this.options = Array.from(select.options).filter(o => o.value !== '');
+                this.wrap();
+                this.render();
+                this.bind();
+            }
+
+            wrap() {
+                this.select.style.display = 'none';
+                this.wrapper = document.createElement('div');
+                this.wrapper.className = 'searchable-wrapper';
+                this.select.parentNode.insertBefore(this.wrapper, this.select);
+                this.wrapper.appendChild(this.select);
+            }
+
+            render() {
+                this.input = document.createElement('input');
+                this.input.type = 'text';
+                this.input.className = 'form-control searchable-input';
+                this.input.placeholder = this.select.options[0]?.text || '-- Cari --';
+                this.input.value = this.getSelectedText();
+                this.input.readOnly = this.select.disabled;
+                this.input.autocomplete = 'off';
+
+                this.arrow = document.createElement('span');
+                this.arrow.className = 'searchable-arrow';
+                this.arrow.innerHTML = '<i class="bi bi-chevron-down"></i>';
+
+                this.dropdown = document.createElement('div');
+                this.dropdown.className = 'searchable-dropdown';
+
+                const searchBox = document.createElement('div');
+                searchBox.className = 'search-box';
+                this.searchInput = document.createElement('input');
+                this.searchInput.type = 'text';
+                this.searchInput.placeholder = 'Ketik untuk mencari...';
+                searchBox.appendChild(this.searchInput);
+
+                this.list = document.createElement('ul');
+                this.list.className = 'options-list';
+
+                this.dropdown.appendChild(searchBox);
+                this.dropdown.appendChild(this.list);
+
+                this.wrapper.appendChild(this.input);
+                this.wrapper.appendChild(this.arrow);
+                this.wrapper.appendChild(this.dropdown);
+
+                this.populateList();
+            }
+
+            getSelectedText() {
+                const sel = this.select.options[this.select.selectedIndex];
+                return sel && sel.value !== '' ? sel.text : '';
+            }
+
+            populateList(filter = '') {
+                this.list.innerHTML = '';
+                const lower = filter.toLowerCase();
+                const filtered = this.options.filter(o =>
+                    o.text.toLowerCase().includes(lower)
+                );
+
+                if (filtered.length === 0) {
+                    const li = document.createElement('li');
+                    li.className = 'no-result';
+                    li.textContent = 'Tidak ditemukan';
+                    this.list.appendChild(li);
+                    return;
+                }
+
+                const selectedVal = this.select.value;
+                filtered.forEach(o => {
+                    const li = document.createElement('li');
+                    li.textContent = o.text;
+                    li.dataset.value = o.value;
+                    if (o.value === selectedVal) {
+                        li.classList.add('selected');
+                    }
+                    li.addEventListener('click', () => this.selectOption(o.value, o.text));
+                    li.addEventListener('mouseenter', () => {
+                        this.list.querySelectorAll('li').forEach(l => l.classList.remove('highlighted'));
+                        li.classList.add('highlighted');
+                    });
+                    this.list.appendChild(li);
+                });
+            }
+
+            selectOption(value, text) {
+                this.select.value = value;
+                this.input.value = text;
+                this.select.dispatchEvent(new Event('change', { bubbles: true }));
+                this.close();
+            }
+
+            open() {
+                this.dropdown.classList.add('show');
+                this.searchInput.value = '';
+                this.populateList();
+                this.searchInput.focus();
+            }
+
+            close() {
+                this.dropdown.classList.remove('show');
+            }
+
+            toggle() {
+                this.dropdown.classList.contains('show') ? this.close() : this.open();
+            }
+
+            bind() {
+                this.input.addEventListener('mousedown', (e) => {
+                    if (this.select.disabled) return;
+                    if (this.dropdown.classList.contains('show')) {
+                        e.preventDefault();
+                        this.close();
+                    }
+                });
+
+                this.input.addEventListener('focus', () => {
+                    if (this.select.disabled) return;
+                    if (!this.dropdown.classList.contains('show')) {
+                        this.open();
+                    }
+                });
+
+                this.searchInput.addEventListener('input', () => {
+                    this.populateList(this.searchInput.value);
+                });
+
+                this.searchInput.addEventListener('keydown', (e) => {
+                    const items = this.list.querySelectorAll('li:not(.no-result)');
+                    if (items.length === 0) return;
+
+                    const current = this.list.querySelector('.highlighted');
+                    let idx = current ? Array.from(items).indexOf(current) : -1;
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        idx = Math.min(idx + 1, items.length - 1);
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        idx = Math.max(idx - 1, 0);
+                    } else if (e.key === 'Enter' && current) {
+                        e.preventDefault();
+                        current.click();
+                        return;
+                    } else if (e.key === 'Escape') {
+                        this.close();
+                        return;
+                    }
+
+                    items.forEach(l => l.classList.remove('highlighted'));
+                    if (idx >= 0) items[idx].classList.add('highlighted');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!this.wrapper.contains(e.target)) {
+                        this.close();
+                    }
+                });
+
+                this.select.addEventListener('change', () => {
+                    this.input.value = this.getSelectedText();
+                });
+            }
+        }
+
+        document.querySelectorAll('select[data-searchable]').forEach(el => {
+            new SearchableSelect(el);
         });
     })();
 </script>

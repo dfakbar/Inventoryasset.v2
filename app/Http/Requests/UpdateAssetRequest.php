@@ -31,7 +31,8 @@ class UpdateAssetRequest extends FormRequest
             'assigned_to'       => ['nullable', 'integer', 'exists:users,id'],
 
             // --- Spesifikasi ---
-            'brand'             => ['nullable', 'string', 'max:100'],
+            'brand'             => ['nullable', 'string', 'max:100', 'exists:brands,name'],
+            'vendor_id'         => ['nullable', 'integer', 'exists:vendors,id'],
             'model'             => ['nullable', 'string', 'max:100'],
             'serial_number'     => [
                 'nullable',
@@ -90,7 +91,8 @@ class UpdateAssetRequest extends FormRequest
             'asset_category_id' => 'kategori',
             'asset_location_id' => 'lokasi',
             'assigned_to'       => 'pengguna',
-            'brand'             => 'merek',
+            'brand'     => 'merek',
+            'vendor_id' => 'vendor',
             'model'             => 'model',
             'serial_number'     => 'nomor seri',
             'purchase_date'     => 'tanggal pembelian',

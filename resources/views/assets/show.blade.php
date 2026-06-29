@@ -166,6 +166,10 @@
                             <td class="py-3 pe-3">{{ $asset->brand ?: '—' }}</td>
                         </tr>
                         <tr class="border-bottom">
+                            <th class="ps-3 py-3 text-muted fw-medium small">Vendor</th>
+                            <td class="py-3 pe-3">{{ $asset->vendor?->name ?: '—' }}</td>
+                        </tr>
+                        <tr class="border-bottom">
                             <th class="ps-3 py-3 text-muted fw-medium small">Model</th>
                             <td class="py-3 pe-3">{{ $asset->model ?: '—' }}</td>
                         </tr>

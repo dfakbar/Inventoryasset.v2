@@ -1,0 +1,142 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Vendor — ' . $vendor->name)
+
+@section('breadcrumb')
+    <li class="breadcrumb-item text-muted">Admin</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('admin.vendors.index') }}" class="text-decoration-none text-muted">Manajemen Vendor</a>
+    </li>
+    <li class="breadcrumb-item active">Edit</li>
+@endsection
+
+@section('content')
+
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-pencil-square text-warning me-2"></i>Edit Vendor
+        </h4>
+        <p class="text-muted small mb-0 mt-1">Perbarui data vendor: <strong>{{ $vendor->name }}</strong></p>
+    </div>
+    <a href="{{ route('admin.vendors.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Kembali
+    </a>
+</div>
+
+@if ($errors->any())
+    <div class="alert alert-danger d-flex gap-2 mb-4">
+        <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0 mt-1"></i>
+        <div>
+            <strong>{{ $errors->count() }} kesalahan:</strong>
+            <ul class="mb-0 mt-1 small">
+                @foreach ($errors->all() as $err) <li>{{ $err }}</li> @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-warning py-2 px-4">
+                <h6 class="mb-0 fw-semibold text-dark">
+                    <i class="bi bi-building me-2"></i>Informasi Vendor
+                </h6>
+            </div>
+
+            <div class="card-body p-4">
+                <form action="{{ route('admin.vendors.update', $vendor) }}" method="POST" novalidate>
+                    @csrf
+                    @method('PUT')
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="name" class="form-label fw-semibold small">
+                                Nama Vendor <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   id="name"
+                                   name="name"
+                                   class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
+                                   value="{{ old('name', $vendor->name) }}"
+                                   required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="contact_person" class="form-label fw-semibold small">Kontak Person</label>
+                            <input type="text"
+                                   id="contact_person"
+                                   name="contact_person"
+                                   class="form-control {{ $errors->has('contact_person') ? 'is-invalid' : '' }}"
+                                   value="{{ old('contact_person', $vendor->contact_person) }}">
+                            @error('contact_person')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label fw-semibold small">Telepon</label>
+                            <input type="text"
+                                   id="phone"
+                                   name="phone"
+                                   class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}"
+                                   value="{{ old('phone', $vendor->phone) }}">
+                            @error('phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-semibold small">Email</label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
+                                   value="{{ old('email', $vendor->email) }}">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label for="address" class="form-label fw-semibold small">Alamat</label>
+                            <textarea id="address"
+                                      name="address"
+                                      class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}"
+                                      rows="2">{{ old('address', $vendor->address) }}</textarea>
+                            @error('address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12">
+                            <label for="description" class="form-label fw-semibold small">Deskripsi</label>
+                            <textarea id="description"
+                                      name="description"
+                                      class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}"
+                                      rows="2">{{ old('description', $vendor->description) }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-floppy2 me-1"></i>Perbarui Vendor
+                        </button>
+                        <a href="{{ route('admin.vendors.index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i>Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection

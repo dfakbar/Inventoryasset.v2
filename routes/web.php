@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes (login, logout, reset password — register dinonaktifkan)
@@ -21,8 +24,11 @@ Route::middleware(['auth'])->group(function () {
     // ── Aset (akses dikontrol per-permission di controller) ──────
     Route::resource('assets', AssetController::class);
 
-    // ── Lokasi (akses dikontrol per-permission di controller) ────
+    // ── Kategori, Merek, Vendor & Lokasi (akses dikontrol per-permission di controller) ────
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('categories', CategoryController::class);
+        Route::resource('brands', BrandController::class);
+        Route::resource('vendors', VendorController::class);
         Route::resource('locations', LocationController::class);
     });
 

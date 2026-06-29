@@ -31,6 +31,24 @@ class PermissionSeeder extends Seeder
             'location.edit'    => 'Edit Data Lokasi',
             'location.delete'  => 'Hapus Lokasi',
         ],
+        'Manajemen Kategori' => [
+            'category.viewAny' => 'Lihat Daftar Kategori',
+            'category.create'  => 'Tambah Kategori Baru',
+            'category.edit'    => 'Edit Data Kategori',
+            'category.delete'  => 'Hapus Kategori',
+        ],
+        'Manajemen Merek' => [
+            'brand.viewAny' => 'Lihat Daftar Merek',
+            'brand.create'  => 'Tambah Merek Baru',
+            'brand.edit'    => 'Edit Data Merek',
+            'brand.delete'  => 'Hapus Merek',
+        ],
+        'Manajemen Vendor' => [
+            'vendor.viewAny' => 'Lihat Daftar Vendor',
+            'vendor.create'  => 'Tambah Vendor Baru',
+            'vendor.edit'    => 'Edit Data Vendor',
+            'vendor.delete'  => 'Hapus Vendor',
+        ],
     ];
 
     public function run(): void

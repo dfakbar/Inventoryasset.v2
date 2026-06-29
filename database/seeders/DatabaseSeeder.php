@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,    // 1. Buat roles & permissions
             AdminUserSeeder::class,     // 2. Buat user admin + staff
             AssetCategorySeeder::class,
+            BrandSeeder::class,
             AssetLocationSeeder::class,
             LocationSeeder::class,
         ]);

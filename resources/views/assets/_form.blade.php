@@ -40,6 +40,7 @@
             <select id="asset_category_id"
                     name="asset_category_id"
                     class="form-select {{ $errors->has('asset_category_id') ? 'is-invalid' : '' }}"
+                    data-searchable
                     {{ $isMutationOnly ? 'disabled' : 'required' }}>
                 <option value="" disabled {{ old('asset_category_id', $asset->asset_category_id ?? '') === '' ? 'selected' : '' }}>
                     -- Pilih Kategori --
@@ -62,14 +63,41 @@
         {{-- Merek --}}
         <div class="mb-3">
             <label for="brand" class="form-label fw-semibold">Merek</label>
-            <input type="text"
-                   id="brand"
-                   name="brand"
-                   class="form-control {{ $errors->has('brand') ? 'is-invalid' : '' }}"
-                   value="{{ old('brand', $asset->brand ?? '') }}"
-                   placeholder="Contoh: Dell, HP, Lenovo"
-                   {{ $isMutationOnly ? 'disabled' : '' }}>
+            <select id="brand"
+                    name="brand"
+                    class="form-select {{ $errors->has('brand') ? 'is-invalid' : '' }}"
+                    data-searchable
+                    {{ $isMutationOnly ? 'disabled' : '' }}>
+                <option value="">-- Pilih Merek --</option>
+                @foreach ($brands as $brand)
+                    <option value="{{ $brand->name }}"
+                        {{ old('brand', $asset->brand ?? '') === $brand->name ? 'selected' : '' }}>
+                        {{ $brand->name }}
+                    </option>
+                @endforeach
+            </select>
             @error('brand')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Vendor --}}
+        <div class="mb-3">
+            <label for="vendor_id" class="form-label fw-semibold">Vendor</label>
+            <select id="vendor_id"
+                    name="vendor_id"
+                    class="form-select {{ $errors->has('vendor_id') ? 'is-invalid' : '' }}"
+                    data-searchable
+                    {{ $isMutationOnly ? 'disabled' : '' }}>
+                <option value="">-- Pilih Vendor --</option>
+                @foreach ($vendors as $vendor)
+                    <option value="{{ $vendor->id }}"
+                        {{ old('vendor_id', $asset->vendor_id ?? '') == $vendor->id ? 'selected' : '' }}>
+                        {{ $vendor->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('vendor_id')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
         </div>
@@ -112,6 +140,7 @@
             <select id="status"
                     name="status"
                     class="form-select {{ $errors->has('status') ? 'is-invalid' : '' }}"
+                    data-searchable
                     required>
                 @foreach ($statuses as $status)
                     <option value="{{ $status->value }}"
@@ -155,7 +184,8 @@
             <label for="location_id" class="form-label fw-semibold">Lokasi</label>
             <select id="location_id"
                     name="location_id"
-                    class="form-select {{ $errors->has('location_id') ? 'is-invalid' : '' }}">
+                    class="form-select {{ $errors->has('location_id') ? 'is-invalid' : '' }}"
+                    data-searchable>
                 <option value="">-- Pilih Lokasi --</option>
                 @foreach ($locations as $location)
                     <option value="{{ $location->id }}"

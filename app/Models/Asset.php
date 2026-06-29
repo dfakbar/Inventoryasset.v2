@@ -20,6 +20,7 @@ class Asset extends Model
         'location_id',          // ← diganti dari asset_location_id
         'assigned_to',
         'brand',
+        'vendor_id',
         'model',
         'serial_number',
         'purchase_date',
@@ -66,6 +67,11 @@ class Asset extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 
     // =========================================================
