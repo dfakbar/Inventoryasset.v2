@@ -74,7 +74,7 @@ class UserController extends Controller
 
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', "User <strong>{$user->name}</strong> berhasil ditambahkan.");
+                ->with('success', "User {$user->name} berhasil ditambahkan.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -145,7 +145,7 @@ class UserController extends Controller
 
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', "User <strong>{$user->name}</strong> berhasil diperbarui.");
+                ->with('success', "User {$user->name} berhasil diperbarui.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -176,7 +176,7 @@ class UserController extends Controller
 
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', "User <strong>{$userName}</strong> berhasil dihapus.");
+                ->with('success', "User {$userName} berhasil dihapus.");
 
         } catch (\Throwable $e) {
             DB::rollBack();

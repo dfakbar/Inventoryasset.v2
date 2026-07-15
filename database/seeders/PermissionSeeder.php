@@ -17,6 +17,15 @@ class PermissionSeeder extends Seeder
      * @var array<string, array<string, string>>
      */
     public const GROUPS = [
+        'Layanan IT (Service Desk)' => [
+            'ticket.viewAny'  => 'Lihat Semua Tiket',
+            'ticket.create'   => 'Buat Tiket Baru',
+            'ticket.assign'   => 'Assign Tiket ke Agent',
+            'ticket.manage'   => 'Kelola Tiket (Assign, Update Status, Edit)',
+            'ticket.close'    => 'Tutup Tiket Terselesaikan',
+            'ticket.delete'   => 'Hapus Tiket',
+            'ticket.reports'  => 'Akses Laporan & SLA',
+        ],
         'Manajemen Aset' => [
             'asset.viewAny'         => 'Lihat Daftar & Detail Aset',
             'asset.create'          => 'Tambah Aset Baru',
@@ -66,9 +75,16 @@ class PermissionSeeder extends Seeder
 
         // Buat roles
         $adminRole = Role::firstOrCreate(['name' => UserRole::Admin->value, 'guard_name' => 'web']);
+        $agentRole = Role::firstOrCreate(['name' => UserRole::Agent->value, 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => UserRole::Staff->value, 'guard_name' => 'web']);
 
         // Admin role mendapatkan SEMUA permission secara otomatis
         $adminRole->syncPermissions($allPerms);
+
+        // Agent role mendapatkan permission untuk assign tiket
+        $assignPerm = Permission::firstOrCreate(['name' => 'ticket.assign', 'guard_name' => 'web']);
+        if (!$agentRole->hasPermissionTo($assignPerm)) {
+            $agentRole->givePermissionTo($assignPerm);
+        }
     }
 }

@@ -88,7 +88,7 @@ class AssetController extends Controller
 
             return redirect()
                 ->route('assets.show', $asset)
-                ->with('success', "Aset <strong>{$asset->asset_code}</strong> ({$asset->name}) berhasil ditambahkan.");
+                ->with('success', "Aset {$asset->asset_code} ({$asset->name}) berhasil ditambahkan.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -174,7 +174,7 @@ class AssetController extends Controller
 
             return redirect()
                 ->route('assets.show', $asset)
-                ->with('success', "Aset <strong>{$asset->asset_code}</strong> berhasil diperbarui.");
+                ->with('success', "Aset {$asset->asset_code} berhasil diperbarui.");
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -202,7 +202,7 @@ class AssetController extends Controller
 
             return redirect()
                 ->route('assets.index')
-                ->with('success', "Aset <strong>{$assetCode}</strong> ({$assetName}) berhasil dihapus.");
+                ->with('success', "Aset {$assetCode} ({$assetName}) berhasil dihapus.");
 
         } catch (\Throwable $e) {
             DB::rollBack();

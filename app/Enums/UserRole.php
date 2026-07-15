@@ -9,12 +9,14 @@ namespace App\Enums;
 enum UserRole: string
 {
     case Admin = 'admin';
+    case Agent = 'agent';
     case Staff = 'staff';
 
     public function label(): string
     {
         return match($this) {
             self::Admin => 'Administrator',
+            self::Agent => 'IT Agent',
             self::Staff => 'Staff',
         };
     }
@@ -23,6 +25,7 @@ enum UserRole: string
     {
         return match($this) {
             self::Admin => 'badge bg-danger',
+            self::Agent => 'badge bg-warning text-dark',
             self::Staff => 'badge bg-primary',
         };
     }

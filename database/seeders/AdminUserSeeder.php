@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AgentStatus;
 use App\Enums\UserRole;
+use App\Models\AgentStatusModel;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -38,5 +40,23 @@ class AdminUserSeeder extends Seeder
         $staff->syncRoles([UserRole::Staff->value]);
         // Berikan permission view-only sebagai default untuk staff contoh
         $staff->syncPermissions(['asset.viewAny']);
+
+        // ── Agent (contoh IT Support) ──
+        $agent = User::updateOrCreate(
+            ['email' => 'agent@company.com'],
+            [
+                'name'     => 'IT Support Agent',
+                'password' => Hash::make('password123'),
+                'role'     => UserRole::Agent->value,
+            ]
+        );
+        $agent->syncRoles([UserRole::Agent->value]);
+        $agent->syncPermissions(['ticket.viewAny', 'ticket.create', 'ticket.manage']);
+
+        // Buat status agent
+        AgentStatusModel::firstOrCreate(
+            ['user_id' => $agent->id],
+            ['status' => AgentStatus::Available->value, 'last_online_at' => now()]
+        );
     }
 }
